@@ -18,7 +18,7 @@ public abstract class BaseTest {
 
     @AfterTest
     public void closeDriver() throws Exception{
-        Thread.sleep(2000);
+        Thread.sleep(3000);
         getDriver().close();
     }
 
