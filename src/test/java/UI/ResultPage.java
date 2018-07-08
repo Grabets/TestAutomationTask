@@ -1,5 +1,6 @@
 package UI;
 
+import UI.component.HotelFromList;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -12,31 +13,38 @@ import org.openqa.selenium.NoSuchElementException;
 
 public class ResultPage {
 
-    private static WebDriver driver;
-
-    public static void setDriver(WebDriver webDriver) {
-        ResultPage.driver = webDriver;
-    }
+    private static final String FORM_CHECK_IN_DATE_LOCATOR = "//div[@data-placeholder='Check-in Date']";
+    private static final String FORM_CHECK_OUT_DATE_LOCATOR = "//div[@data-placeholder='Check-out Date']";
 
     @FindBy(how = How.XPATH, using = "//div[contains(@class,'header__col')]/h1")
-    WebElement headerTextElement;
+    private WebElement headerTextElement;
 
-    @FindBy (how = How.XPATH, using = "//*[@id='hotellist_inner']/div")
-    List<WebElement> resultList;
+    @FindBy (how = How.XPATH, using = "//*[@id='hotellist_inner']/div[@data-hotelid]")
+    private List<WebElement> resultList;
 
     @FindBy (how = How.ID, using = "frm")
-    WebElement searchForm;
+    private WebElement searchForm;
+
+
+    private static WebDriver driver;
+    private List<HotelFromList> listOfHotels;
+
+    public void init(WebDriver webDriver) {
+        ResultPage.driver = webDriver;
+        fillListOfHotels();
+    }
+
 
     public String getTextHeader(){
         return headerTextElement.getText();
     }
 
     public String getCheckInDate(){
-        return searchForm.findElement(By.xpath("//div[@data-placeholder='Check-in Date']")).getText();
+        return searchForm.findElement(By.xpath(FORM_CHECK_IN_DATE_LOCATOR)).getText();
     }
 
     public String getCheckOutDate(){
-        return searchForm.findElement(By.xpath("//div[@data-placeholder='Check-out Date']")).getText();
+        return searchForm.findElement(By.xpath(FORM_CHECK_OUT_DATE_LOCATOR)).getText();
     }
 
     public boolean isCheckInDateCorrect(String checkInDate){
@@ -47,22 +55,37 @@ public class ResultPage {
         return getCheckOutDate().contains(checkOutDate);
     }
 
+//    public List<String> checkCorrectCityInResultList(){
+//        By locator;
+//        String cityLinkLocator = "//a[@data-map-caption]";
+//
+//
+//        List<String> list = new ArrayList<>();
+//        for (WebElement webElement :resultList){
+//                locator = By.xpath(cityLinkLocator);
+//                list.add(webElement.findElement(locator).getText());
+//        }
+//        return list;
+//    }
 
-    public boolean checkCorrectCityInResultList(String correctTown){
-        String text;
-        for (int i = 1; i < resultList.size()+1 ; i++) {
-            try {
-                text = driver.findElement(By.xpath("//*[@id='hotellist_inner']/div["+i+"]/div[2]/div[1]/div[1]/div[1]/a[2]")).getText();
-                if (!text.contains(correctTown))
-                    System.out.println("Incorrect town: "+text);
-                    return false;
-            }
-            catch (NoSuchElementException e){
-                System.out.println("NoSuchElementException: i="+i);
-            }
+
+    public List<String> checkCorrectCityInResultList(){
+        List<String> list = new ArrayList<>();
+        for (HotelFromList hotel : listOfHotels){
+                list.add(hotel.getCityLinkText());
         }
-        return true;
+        return list;
     }
+
+    private void fillListOfHotels(){
+        listOfHotels = new ArrayList<>();
+        for (WebElement webElement : resultList)
+            listOfHotels.add(new HotelFromList(webElement));
+    }
+
+
+
+
 
 
 }

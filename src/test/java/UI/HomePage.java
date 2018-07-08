@@ -1,6 +1,6 @@
 package UI;
 
-import UI.Addition.PopUpCalendar;
+import UI.component.PopUpCalendar;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -12,23 +12,28 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class HomePage {
 
+    private static final String CHECK_IN_ELEMENT_LOCATOR = "//div[contains(@data-calendar2-type,'checkin')]//div[@class='sb-date-field__display']";
+    private static final String CALENDAR_LOCATOR = "//div[@class='c2-calendar']";
+
     @FindBy (how = How.XPATH, using = "//input[@id='ss']")
-    WebElement searchInput;
+    private WebElement searchInput;
     @FindBy (how = How.XPATH, using = "//div/ul[1][contains(@class,'c-auto')]")
-    WebElement autoCompleteSearchList;
+    private WebElement autoCompleteSearchList;
     @FindBy (how = How.XPATH, using = "//div[@class='xp__dates-inner xp__dates__checkin']")
-    WebElement checkInElement;
+    private WebElement checkInElement;
     @FindBy (how = How.XPATH, using = "//div[@class='xp__dates-inner xp__dates__checkout']")
-    WebElement checkOutElement;
+    private WebElement checkOutElement;
 
     @FindBy (how = How.XPATH, using = "//span[text()='Search']/ancestor::button")
-    WebElement searchButton;
+    private WebElement searchButton;
 
+    private static WebDriverWait wait;
 
     private static WebDriver driver;
 
-    public static void setDriver(WebDriver webDriver) {
+    public static void init(WebDriver webDriver) {
         HomePage.driver = webDriver;
+        HomePage.wait = new WebDriverWait(driver, 5);
     }
 
     public HomePage setSearchInput(String text) {
@@ -41,25 +46,24 @@ public class HomePage {
     }
 
     public String getCheckInDate(){
-        return driver.findElement(By.xpath("//div[contains(@data-calendar2-type,'checkin')]//div[@class='sb-date-field__display']")).getText();
+        return driver.findElement(By.xpath(CHECK_IN_ELEMENT_LOCATOR)).getText();
     }
 
-    public HomePage selectFirstSuggestedElements(){
-        WebDriverWait wait = new WebDriverWait(driver, 1);
-        autoCompleteSearchList = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//li[@data-i='0'][contains(text(),'New')]")));
-        autoCompleteSearchList.findElement(By.xpath("//li[@data-i='0'][contains(text(),'New')]")).click();
+    public HomePage selectFirstSuggestedElement(){
+        String firstSuggestedElementLocator = "//li[@data-i='0'][contains(text(),'New')]";
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(firstSuggestedElementLocator))).click();
         return this;
     }
 
     public HomePage setCheckInDate(int day, String month, String year){
-        //checkInElement.click();
-        WebElement checkInCalendar = checkInElement.findElement(By.xpath("//div[@class='c2-calendar']"));
+
+        WebElement checkInCalendar = checkInElement.findElement(By.xpath(CALENDAR_LOCATOR));
         PopUpCalendar calendar = new PopUpCalendar(checkInCalendar,driver);
         calendar.setCheckInDate(day, month,year);
         return this;
     }
 
-    public HomePage setCheckOutDate(int day, String month, String year) throws InterruptedException{
+    public HomePage setCheckOutDate(int day, String month, String year){
         //TODO: incorect logics
         PopUpCalendar calendar = new PopUpCalendar(driver);
         try {
@@ -73,11 +77,11 @@ public class HomePage {
     }
 
     public ResultPage searchButtonClick(){
+        String resultListLocator = "//*[@id='hotellist_inner']";
         searchButton.click();
-        WebDriverWait wait = new WebDriverWait(driver, 5);
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='hotellist_inner']")));
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(resultListLocator)));
         ResultPage resultPage = PageFactory.initElements(driver,ResultPage.class);
-        resultPage.setDriver(driver);
+        resultPage.init(driver);
         return resultPage;
     }
 

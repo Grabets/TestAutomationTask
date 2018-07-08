@@ -15,13 +15,13 @@ public class ResultPageTest extends BaseTest{
     private ResultPage resultPage;
 
     @BeforeMethod
-    public void ResultPageTestsetUp()  throws InterruptedException{
+    public void ResultPageTestSetUp(){
         this.driver = super.getDriver();
         driver.manage().window().maximize();
         driver.navigate().to("https://booking.com");
         this.homePage = PageFactory.initElements(driver,HomePage.class);
-        HomePage.setDriver(driver);
-        homePage.setSearchInput("New York").selectFirstSuggestedElements()
+        HomePage.init(driver);
+        homePage.setSearchInput("New York").selectFirstSuggestedElement()
                 .setCheckInDate(1,"September","2018")
                 .setCheckOutDate(30,"September","2018");
         resultPage=  homePage.searchButtonClick();
@@ -45,7 +45,8 @@ public class ResultPageTest extends BaseTest{
     @Test
     public void checkCorrectTownNameTest(){
         String townName = "New York";
-        Assert.assertTrue(resultPage.checkCorrectCityInResultList(townName));
+        Boolean isTownNameSameInAllList = resultPage.checkCorrectCityInResultList().stream().allMatch(str ->str.trim().contains(townName));
+        Assert.assertTrue(isTownNameSameInAllList);
     }
 
 

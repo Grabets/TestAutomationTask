@@ -5,7 +5,6 @@ import UI.ResultPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -19,13 +18,13 @@ public class HomePageTest extends BaseTest {
         driver.manage().window().maximize();
         driver.navigate().to("https://booking.com");
         this.homePage = PageFactory.initElements(driver,HomePage.class);
-        HomePage.setDriver(driver);
+        HomePage.init(driver);
     }
 
     @Test
     public void searchTownForBookingTest(){
         String town = "New York";
-        homePage.setSearchInput(town).selectFirstSuggestedElements();
+        homePage.setSearchInput(town).selectFirstSuggestedElement();
         Assert.assertEquals(homePage.getSearchInput(),"New York, New York State, USA");
     }
 
@@ -44,7 +43,7 @@ public class HomePageTest extends BaseTest {
         int finishDay = 30;
         String month = "September";
         int year = 2018;
-        ResultPage resultPage = homePage.setSearchInput("New York").selectFirstSuggestedElements()
+        ResultPage resultPage = homePage.setSearchInput("New York").selectFirstSuggestedElement()
             .setCheckInDate(startDay,month,String.valueOf(year))
                 .setCheckOutDate(finishDay,month,String.valueOf(year))
                     .searchButtonClick();
