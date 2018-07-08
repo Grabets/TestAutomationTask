@@ -10,7 +10,6 @@ import org.testng.annotations.Test;
 
 public class ResultPageTest extends BaseTest{
 
-    private HomePageTest homePageTest;
     private WebDriver driver;
     private HomePage homePage;
     private ResultPage resultPage;
@@ -46,7 +45,7 @@ public class ResultPageTest extends BaseTest{
     @Test
     public void checkCorrectTownNameTest(){
         String townName = "New York";
-        Assert.assertTrue(resultPage.checkCorrectSityInResultList(townName));
+        Assert.assertTrue(resultPage.checkCorrectCityInResultList(townName));
     }
 
 
