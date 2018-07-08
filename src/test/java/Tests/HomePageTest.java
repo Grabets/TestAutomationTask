@@ -38,16 +38,24 @@ public class HomePageTest extends BaseTest {
     }
 
     @Test
-    public ResultPage searchTest() throws InterruptedException{
+    public void searchTest() throws InterruptedException{
         //      TODO: update to data-driven approach
         int startDay = 1;
         int finishDay = 30;
         String month = "September";
         int year = 2018;
-        homePage.setSearchInput("New York").selectFirstSuggestedElements()
+        ResultPage resultPage = homePage.setSearchInput("New York").selectFirstSuggestedElements()
             .setCheckInDate(startDay,month,String.valueOf(year))
-                .setCheckOutDate(finishDay,month,String.valueOf(year));
-        return  homePage.searchButtonClick();
+                .setCheckOutDate(finishDay,month,String.valueOf(year))
+                    .searchButtonClick();
+
+        Assert.assertEquals(resultPage.getTextHeader(), "New York City");
+    }
+
+    @Test
+    public void checkIncorrectSearchTest(){
+
+        homePage.setSearchInput("@^^^").searchButtonClick();
 
     }
 
