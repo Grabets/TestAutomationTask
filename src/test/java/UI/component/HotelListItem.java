@@ -11,8 +11,6 @@ public class HotelListItem {
     private static final String HOTEL_STAR_LOCATOR = ".//i[contains(@class,'star_track')]/span";
 
     private WebElement hotelElement;
-    private WebElement hotelNameElement;
-
     private WebElement cityLinkElement;
     private WebElement starsRateElement;
     private WebElement priceElement;
@@ -22,7 +20,6 @@ public class HotelListItem {
         this.priceElement = getElementIfExists(HOTEL_PRICE_LOCATOR);
         this.cityLinkElement = getElementIfExists(CITY_LINK_LOCATOR);
         this.starsRateElement = getElementIfExists(HOTEL_STAR_LOCATOR);
-
     }
 
     public String getCityLinkText() {
@@ -39,6 +36,10 @@ public class HotelListItem {
         }
         String intValue = getPriceText().replaceAll("[^0-9]", "");
         return Integer.parseInt(intValue);
+    }
+
+    public String getStarsText(){
+        return isElementPresent(starsRateElement)? starsRateElement.getText() : "";
     }
 
     private WebElement getElementIfExists(String locator) {

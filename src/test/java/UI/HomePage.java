@@ -7,6 +7,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -17,10 +18,13 @@ public class HomePage {
 
     @FindBy (how = How.XPATH, using = "//input[@id='ss']")
     private WebElement searchInput;
+
     @FindBy (how = How.XPATH, using = "//div/ul[1][contains(@class,'c-auto')]")
     private WebElement autoCompleteSearchList;
+
     @FindBy (how = How.XPATH, using = "//div[@class='xp__dates-inner xp__dates__checkin']")
     private WebElement checkInElement;
+
     @FindBy (how = How.XPATH, using = "//div[@class='xp__dates-inner xp__dates__checkout']")
     private WebElement checkOutElement;
 
@@ -51,12 +55,13 @@ public class HomePage {
 
     public HomePage selectFirstSuggestedElement(){
         String firstSuggestedElementLocator = "//li[@data-i='0'][contains(text(),'New')]";
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(firstSuggestedElementLocator))).click();
+        By locator = By.xpath(firstSuggestedElementLocator);
+        ExpectedCondition<WebElement> expectedCondition = ExpectedConditions.elementToBeClickable(locator);
+        wait.until(expectedCondition).click();
         return this;
     }
 
     public HomePage setCheckInDate(int day, String month, String year){
-
         WebElement checkInCalendar = checkInElement.findElement(By.xpath(CALENDAR_LOCATOR));
         PopUpCalendar calendar = new PopUpCalendar(checkInCalendar,driver);
         calendar.setCheckInDate(day, month,year);

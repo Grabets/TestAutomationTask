@@ -30,7 +30,6 @@ public class HomePageTest extends BaseTest {
 
     @Test
     public void setSimpleCheckInOutDateTest() throws InterruptedException{
-        //      TODO: checkInDate need to delete //
         homePage.setCheckInDate(1,"September", "2018");
         homePage.setCheckOutDate(30,"September", "2018");
 
@@ -38,7 +37,6 @@ public class HomePageTest extends BaseTest {
 
     @Test
     public void searchTest() throws InterruptedException{
-        //      TODO: update to data-driven approach
         int startDay = 1;
         int finishDay = 30;
         String month = "September";
