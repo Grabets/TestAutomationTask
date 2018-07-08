@@ -8,6 +8,9 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class ResultPageTest extends BaseTest{
 
     private WebDriver driver;
@@ -45,8 +48,20 @@ public class ResultPageTest extends BaseTest{
     @Test
     public void checkCorrectTownNameTest(){
         String townName = "New York";
-        Boolean isTownNameSameInAllList = resultPage.checkCorrectCityInResultList().stream().allMatch(str ->str.trim().contains(townName));
+        List<String> listOfCity = resultPage.checkCorrectCityInResultList();
+        Boolean isTownNameSameInAllList = listOfCity.stream().allMatch(str ->str.trim().contains(townName));
         Assert.assertTrue(isTownNameSameInAllList);
+    }
+
+    @Test
+    public void checkPriceTest(){
+        //resultPage.checkPriceInResultList();
+        resultPage.printPrice();
+    }
+
+    @Test
+    public void clickOnStartFilterTest(){
+        resultPage.filterStarsEnableClick("5");
     }
 
 
