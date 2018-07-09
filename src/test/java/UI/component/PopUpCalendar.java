@@ -73,7 +73,7 @@ public class PopUpCalendar {
     }
 
     private String formatDayToXpath(String day) {
-        return Integer.parseInt(day) < 10 ? " " + day : String.valueOf(day);
+        return Integer.parseInt(day) < 10 ? "\u00a0" + day : String.valueOf(day);
     }
 
 
