@@ -1,11 +1,11 @@
 package UI;
 
 import UI.component.HotelListItem;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +24,10 @@ public class ResultPage {
     @FindBy(how = How.XPATH, using = "//a[@data-category='price']")
     private WebElement lowestPriceFirstElement;
 
-    @FindBy (how = How.XPATH, using = LIST_OF_HOTELS_LOCATOR)
+    @FindBy(how = How.XPATH, using = LIST_OF_HOTELS_LOCATOR)
     private List<WebElement> resultList;
 
-    @FindBy (how = How.ID, using = "frm")
+    @FindBy(how = How.ID, using = "frm")
     private WebElement searchForm;
 
     private static WebDriver driver;
@@ -37,37 +37,42 @@ public class ResultPage {
         ResultPage.driver = webDriver;
     }
 
-    public String getTextHeader(){
+    public String getTextHeader() {
         return headerTextElement.getText();
     }
 
-    public String getCheckInDate(){
+    public String getCheckInDate() {
         return searchForm.findElement(By.xpath(FORM_CHECK_IN_DATE_LOCATOR)).getText();
     }
 
-    public String getCheckOutDate(){
+    public String getCheckOutDate() {
         return searchForm.findElement(By.xpath(FORM_CHECK_OUT_DATE_LOCATOR)).getText();
     }
 
-    public boolean isCheckInDateCorrect(String checkInDate){
+    public boolean isCheckInDateCorrect(String checkInDate) {
         return getCheckInDate().contains(checkInDate);
     }
 
-    public boolean isCheckOutDateCorrect(String checkOutDate){
+    public boolean isCheckOutDateCorrect(String checkOutDate) {
         return getCheckOutDate().contains(checkOutDate);
     }
 
-    public List<String> cityInResultList(){
+    public boolean isDateCorrect(String checkInDate, String checkOutDate) {
+        Boolean isCheckInDateCorrect = isCheckInDateCorrect(checkInDate);
+        Boolean isCheckOutDateCorrect = isCheckOutDateCorrect(checkOutDate);
+        return isCheckInDateCorrect.equals(isCheckOutDateCorrect);
+    }
+
+    public List<String> cityInResultList() {
         fillListOfHotels(resultList);
         List<String> list = new ArrayList<>();
-        for (HotelListItem hotel : listOfHotels){
-                list.add(hotel.getCityLinkText());
+        for (HotelListItem hotel : listOfHotels) {
+            list.add(hotel.getCityLinkText());
         }
         return list;
     }
 
-
-    public void starsEnableFilterClick(String stars){
+    public void starsEnableFilterClick(String stars) {
         String starsFilterLocator = gerFormatStarsToXPath(stars);
         By locator = By.xpath(starsFilterLocator);
         driver.findElement(locator).click();
@@ -76,7 +81,7 @@ public class ResultPage {
     public List<String> getStarsList() throws InterruptedException {
         List<String> listOfStars = new ArrayList<>();
         initializeListOfHotels();
-        for (HotelListItem hotel: listOfHotels)
+        for (HotelListItem hotel : listOfHotels)
             listOfStars.add(hotel.getStarsText());
 
         return listOfStars;
@@ -86,47 +91,46 @@ public class ResultPage {
         lowestPriceFirstElementClick();
         initializeListOfHotels();
         List<Integer> priceList = new ArrayList<>();
-        for (HotelListItem hotel : listOfHotels){
+        for (HotelListItem hotel : listOfHotels) {
             priceList.add(hotel.getPrice());
         }
         return priceList;
     }
 
-    private void initializeListOfHotels() throws InterruptedException {
+    private void initializeListOfHotels(){
         By listOfHotelsLocator = By.xpath(LIST_OF_HOTELS_LOCATOR);
-        Thread.sleep(10000);
-//        By popUpFrameLocator = By.xpath("//iframe[contains(@class,'sr-usp-overlay')]");
-//        WebDriverWait wait = new WebDriverWait(driver, 10);
-//        ExpectedCondition<Boolean> expectedCondition = ExpectedConditions.not(presenceOfElementLocated(popUpFrameLocator));
-//        wait.until(expectedCondition);
+        waitOverlayInvisibleOrAbsent();
         List<WebElement> list = driver.findElements(listOfHotelsLocator);
         fillListOfHotels(list);
     }
 
-    private void fillListOfHotels(List<WebElement> list){
+    private void waitOverlayInvisibleOrAbsent() {
+        By popUpFrameLocator = By.xpath("//div[contains(@class,'sr-usp-overlay')]");
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        ExpectedCondition<Boolean> expectedCondition = webDriver -> {
+            try {
+                WebElement element = webDriver.findElement(popUpFrameLocator);
+                return !element.isDisplayed();
+            } catch (NoSuchElementException | StaleElementReferenceException e) {
+                return true;
+            }
+        };
+        wait.until(expectedCondition);
+    }
+
+    private void fillListOfHotels(List<WebElement> list) {
         listOfHotels = new ArrayList<>();
         for (WebElement webElement : list)
             listOfHotels.add(new HotelListItem(webElement));
     }
 
-    private void lowestPriceFirstElementClick(){
+    private void lowestPriceFirstElementClick() {
         lowestPriceFirstElement.click();
     }
 
-    private String gerFormatStarsToXPath(String numOfStars){
-        return String.format(FILTER_STAR_LOCATOR,numOfStars);
+    private String gerFormatStarsToXPath(String numOfStars) {
+        return String.format(FILTER_STAR_LOCATOR, numOfStars);
     }
-    //ONLY FOR TEST
-    public void printPrice(){
-      listOfHotels.stream()
-              .map(hotelListItem -> hotelListItem.getPrice())
-              .filter(Objects::nonNull)
-              .forEach(price -> System.out.println(price));
-    }
-
-
-
-
 
 
 

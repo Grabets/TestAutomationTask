@@ -4,11 +4,15 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class HotelListItem {
 
     private static final String CITY_LINK_LOCATOR = ".//a[@data-map-caption]";
     private static final String HOTEL_PRICE_LOCATOR = ".//strong[contains(@class, 'price')]";
     private static final String HOTEL_STAR_LOCATOR = ".//i[contains(@class,'star_track')]/span";
+    private static final Logger LOGGER = Logger.getLogger( HotelListItem.class.getName() );
 
     private WebElement hotelElement;
     private WebElement cityLinkElement;
@@ -47,7 +51,7 @@ public class HotelListItem {
         try {
             result = hotelElement.findElement(By.xpath(locator));
         } catch (NoSuchElementException e) {
-            //TODO; Write to log
+            LOGGER.log( Level.WARNING, "Null element in HotelListItem have been handled due to absence of price");
         }
         return result;
     }
